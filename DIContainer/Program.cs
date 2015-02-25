@@ -1,6 +1,7 @@
-﻿using System;
+﻿using DIContainer.Commands;
+using Ninject;
+using System;
 using System.Linq;
-using DIContainer.Commands;
 
 namespace DIContainer
 {
@@ -13,7 +14,6 @@ namespace DIContainer
         {
             this.arguments = arguments;
             this.commands = commands;
-        
         }
 
         static void Main(string[] args)

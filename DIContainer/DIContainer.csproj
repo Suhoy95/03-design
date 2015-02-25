@@ -11,6 +11,8 @@
     <AssemblyName>DIContainer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
-      <HintPath>packages\Castle.Core.3.2.0\lib\net45\Castle.Core.dll</HintPath>
+      <HintPath>..\packages\Castle.Core.3.2.0\lib\net35\Castle.Core.dll</HintPath>
     </Reference>
     <Reference Include="FakeItEasy">
       <HintPath>packages\FakeItEasy.1.25.2\lib\net40\FakeItEasy.dll</HintPath>
@@ -72,9 +74,82 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="FakeItEasy.1.25.2\FakeItEasy.1.25.2.nupkg" />
+    <None Include="Ninject.3.2.3-unstable-012\Ninject.3.2.3-unstable-012.nupkg" />
+    <None Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\Ninject.Extensions.Conventions.3.2.1-unstable-003.nupkg" />
+    <None Include="Ninject.Extensions.Factory.3.2.2-unstable-002\Ninject.Extensions.Factory.3.2.2-unstable-002.nupkg" />
+    <None Include="NUnit.2.6.4\NUnit.2.6.4.nupkg" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="FakeItEasy.1.25.2\lib\net35\FakeItEasy.dll" />
+    <Content Include="FakeItEasy.1.25.2\lib\net35\FakeItEasy.xml" />
+    <Content Include="FakeItEasy.1.25.2\lib\net40\FakeItEasy.dll" />
+    <Content Include="FakeItEasy.1.25.2\lib\net40\FakeItEasy.xml" />
+    <Content Include="FakeItEasy.1.25.2\lib\sl50\FakeItEasy.dll" />
+    <Content Include="FakeItEasy.1.25.2\lib\sl50\FakeItEasy.xml" />
+    <Content Include="FakeItEasy.1.25.2\lib\win8\FakeItEasy.dll" />
+    <Content Include="FakeItEasy.1.25.2\lib\win8\FakeItEasy.xml" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\net35\Ninject.dll" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\net35\Ninject.xml" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\net40\Ninject.dll" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\net40\Ninject.xml" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\net45-full\Ninject.dll" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\net45-full\Ninject.xml" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl2\Ninject.dll" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl2\Ninject.xml" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl3-wp\Ninject.dll" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl3-wp\Ninject.xml" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl3\Ninject.dll" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl3\Ninject.xml" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl4-windowsphone71\Ninject.dll" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl4-windowsphone71\Ninject.xml" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl4\Ninject.dll" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl4\Ninject.xml" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl5\Ninject.dll" />
+    <Content Include="Ninject.3.2.3-unstable-012\lib\sl5\Ninject.xml" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\net35\Ninject.Extensions.Conventions.dll" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\net35\Ninject.Extensions.Conventions.xml" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\net40\Ninject.Extensions.Conventions.dll" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\net40\Ninject.Extensions.Conventions.xml" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\net45-full\Ninject.Extensions.Conventions.dll" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\net45-full\Ninject.Extensions.Conventions.xml" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl2\Ninject.Extensions.Conventions.dll" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl2\Ninject.Extensions.Conventions.xml" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl3-wp\Ninject.Extensions.Conventions.dll" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl3-wp\Ninject.Extensions.Conventions.xml" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl3\Ninject.Extensions.Conventions.dll" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl3\Ninject.Extensions.Conventions.xml" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl4-windowsphone71\Ninject.Extensions.Conventions.dll" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl4-windowsphone71\Ninject.Extensions.Conventions.xml" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl4\Ninject.Extensions.Conventions.dll" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl4\Ninject.Extensions.Conventions.xml" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl5\Ninject.Extensions.Conventions.dll" />
+    <Content Include="Ninject.Extensions.Conventions.3.2.1-unstable-003\lib\sl5\Ninject.Extensions.Conventions.xml" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\net35\Ninject.Extensions.Factory.dll" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\net35\Ninject.Extensions.Factory.xml" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\net40\Ninject.Extensions.Factory.dll" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\net40\Ninject.Extensions.Factory.xml" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\net45-full\Ninject.Extensions.Factory.dll" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\net45-full\Ninject.Extensions.Factory.xml" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl2\Ninject.Extensions.Factory.dll" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl2\Ninject.Extensions.Factory.xml" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl3-wp\Ninject.Extensions.Factory.dll" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl3-wp\Ninject.Extensions.Factory.xml" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl3\Ninject.Extensions.Factory.dll" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl3\Ninject.Extensions.Factory.xml" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl4-windowsphone71\Ninject.Extensions.Factory.dll" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl4-windowsphone71\Ninject.Extensions.Factory.xml" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl4\Ninject.Extensions.Factory.dll" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl4\Ninject.Extensions.Factory.xml" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl5\Ninject.Extensions.Factory.dll" />
+    <Content Include="Ninject.Extensions.Factory.3.2.2-unstable-002\lib\sl5\Ninject.Extensions.Factory.xml" />
+    <Content Include="NUnit.2.6.4\lib\nunit.framework.dll" />
+    <Content Include="NUnit.2.6.4\lib\nunit.framework.xml" />
+    <Content Include="NUnit.2.6.4\license.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
