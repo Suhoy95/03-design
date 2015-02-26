@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 
 namespace DIContainer.Commands
@@ -7,17 +8,18 @@ namespace DIContainer.Commands
     {
         private readonly CommandLineArgs arguments;
 
-        public TimerCommand(CommandLineArgs arguments)
+        public TimerCommand(CommandLineArgs arguments, TextWriter newWriter)
         {
+            this.ioWriter = newWriter;
             this.arguments = arguments;
         }
 
         public override void Execute()
         {
             var timeout = TimeSpan.FromMilliseconds(arguments.GetInt(0));
-            Console.WriteLine("Waiting for " + timeout);
+            ioWriter.WriteLine("Waiting for " + timeout);
             Thread.Sleep(timeout);
-            Console.WriteLine("Done!");
+            ioWriter.WriteLine("Done!");
         }
     }
 }

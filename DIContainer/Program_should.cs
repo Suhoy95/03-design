@@ -1,4 +1,5 @@
-﻿using FakeItEasy;
+﻿using System.IO;
+using FakeItEasy;
 using NUnit.Framework;
 
 namespace DIContainer
@@ -10,8 +11,9 @@ namespace DIContainer
         public void run_command_by_name()
         {
             var command = A.Fake<ICommand>();
+            var writer = A.Fake<TextWriter>();
             A.CallTo(() => command.Name).Returns("cmd");
-            var program = new Program(new CommandLineArgs("CMD"), command);
+            var program = new Program(new CommandLineArgs("CMD"), writer, command);
 
             program.Run();
 
@@ -22,8 +24,9 @@ namespace DIContainer
         public void dont_run_command_wiht_other_name()
         {
             var command = A.Fake<ICommand>();
+            var writer = A.Fake<TextWriter>();
             A.CallTo(() => command.Name).Returns("cmd");
-            var program = new Program(new CommandLineArgs("anotherCmd"), command);
+            var program = new Program(new CommandLineArgs("anotherCmd"), writer,command);
 
             program.Run();
 
