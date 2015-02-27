@@ -29,7 +29,7 @@ namespace battleships
 			foreach (var loc in cells)
 			{
 				var horizontal = random.Next(2) == 0;
-				if (map.Set(loc, size, horizontal) || map.Set(loc, size, !horizontal)) return;
+				if (map.SetShip(loc, size, horizontal) || map.SetShip(loc, size, !horizontal)) return;
 			}
 			throw new Exception("Can't put next ship on map. No free space");
 		}
