@@ -7,20 +7,20 @@ namespace battleships
 {
 	public class Settings
 	{
-		public int CrashLimit;
-		public int GamesCount;
-		public int Height;
-		public bool Interactive;
-		public int MemoryLimit;
-		public int RandomSeed;
-		public int[] Ships;
-		public int TimeLimitSeconds;
-		public bool Verbose;
-		public int Width;
+        public bool Interactive;
+        public bool Verbose;
 
-		public Settings()
-		{
-		}
+        public int GamesCount;
+        public int RandomSeed;
+
+        public int[] Ships;
+
+        public int Width;
+        public int Height;
+
+        public int TimeLimitSeconds;
+        public int MemoryLimit;
+		public int CrashLimit;
 
 		public Settings(string settingsFilename)
 		{
@@ -28,14 +28,19 @@ namespace battleships
 				.Where(line => !string.IsNullOrWhiteSpace(line))
 				.Select(line => line.Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries))
 				.ToList();
-			Interactive = GetBool(lines, "interactive");
+			
+            Interactive = GetBool(lines, "interactive");
 			Verbose = GetBool(lines, "verbose");
-			GamesCount = GetInt(lines, "gamesCount", 1);
+			
+            GamesCount = GetInt(lines, "gamesCount", 1);
+            RandomSeed = GetInt(lines, "randomSeed", Environment.TickCount);
+
 			Width = GetInt(lines, "width", 20);
 			Height = GetInt(lines, "height", 20);
-			RandomSeed = GetInt(lines, "randomSeed", Environment.TickCount);
+
 			Ships = Get(lines, "ships").Select(int.Parse).ToArray();
-			TimeLimitSeconds = GetInt(lines, "timelimitSeconds", 60);
+			
+            TimeLimitSeconds = GetInt(lines, "timelimitSeconds", 60);
 			MemoryLimit = GetInt(lines, "memoryLimit", 500*1024*1024);
 			CrashLimit = GetInt(lines, "crashlimit", 1);
 		}
