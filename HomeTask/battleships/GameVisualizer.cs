@@ -3,7 +3,12 @@ using System.Text;
 
 namespace battleships
 {
-	public class GameVisualizer
+    internal interface IGameVisualizer
+    {
+        void Visualize(Game game);
+    }
+
+	public class GameVisualizer : IGameVisualizer
 	{
 		public void Visualize(Game game)
 		{
