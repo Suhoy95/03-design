@@ -1,33 +1,55 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ninject;
 using NLog;
 
 namespace battleships
 {
 	public class AiTester
 	{
+        private static IKernel container = new StandardKernel();
 		private static readonly Logger resultsLog = LogManager.GetLogger("results");
 		private readonly Settings settings;
+	    private readonly MapGenerator gen;
+	    private readonly GameVisualizer vis;
+	    private readonly ProcessMonitor monitor;
+        private int badShots = 0;
+        private int crashes = 0;
+        private int gamesPlayed = 0;
+        private List<int> shots = new List<int>();
+        private Ai ai;
 
-		public AiTester(Settings settings)
-		{
-			this.settings = settings;
-		}
+	    public AiTester(Settings settings)
+	    {
+            this.settings = settings;
+            InitAiTester();
+
+            gen = container.Get<MapGenerator>();
+            vis = container.Get<GameVisualizer>();
+            monitor = container.Get<ProcessMonitor>();
+            ai = container.Get<Ai>();
+	    }
+
+	    private void InitAiTester()
+	    {
+	        container.Bind<MapGenerator>().ToSelf().WithConstructorArgument(settings)
+                                                    .WithConstructorArgument(new Random(settings.RandomSeed));
+            container.Bind<ProcessMonitor>().ToSelf()
+                 .WithConstructorArgument(TimeSpan.FromSeconds(settings.TimeLimitSeconds * settings.GamesCount))
+                 .WithConstructorArgument(settings.MemoryLimit);
+            
+	        container.Bind<Map>().ToMethod(context => gen.GenerateMap());
+	    }
 
 		public void TestSingleFile(string exe)
 		{
-			var gen = new MapGenerator(settings, new Random(settings.RandomSeed));
-			var vis = new GameVisualizer();
-			var monitor = new ProcessMonitor(TimeSpan.FromSeconds(settings.TimeLimitSeconds * settings.GamesCount), settings.MemoryLimit);
-			var badShots = 0;
-			var crashes = 0;
-			var gamesPlayed = 0;
-			var shots = new List<int>();
-			var ai = new Ai(exe, monitor);
-			for (var gameIndex = 0; gameIndex < settings.GamesCount; gameIndex++)
+            container.Bind<Ai>().ToSelf().WithConstructorArgument(exe)
+                                         .WithConstructorArgument(monitor);
+
+            for (var gameIndex = 0; gameIndex < settings.GamesCount; gameIndex++)
 			{
-				var map = gen.GenerateMap();
+				var map = container.Get<Map>();
 				var game = new Game(map, ai);
 				RunGameToEnd(game, vis);
 				gamesPlayed++;
@@ -36,17 +58,19 @@ namespace battleships
 				{
 					crashes++;
 					if (crashes > settings.CrashLimit) break;
-					ai = new Ai(exe, monitor);
+					ai = container.Get<Ai>();
 				}
 				else
 					shots.Add(game.TurnsCount);
-				if (settings.Verbose)
+			
+                if (settings.Verbose)
 				{
 					Console.WriteLine(
 						"Game #{3,4}: Turns {0,4}, BadShots {1}{2}",
 						game.TurnsCount, game.BadShots, game.AiCrashed ? ", Crashed" : "", gameIndex);
 				}
 			}
+
 			ai.Dispose();
 			WriteTotal(ai, shots, crashes, badShots, gamesPlayed);
 		}

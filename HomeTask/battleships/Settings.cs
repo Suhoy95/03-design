@@ -22,7 +22,9 @@ namespace battleships
         public int MemoryLimit;
 		public int CrashLimit;
 
-		public Settings(string settingsFilename)
+        public Settings() { }
+
+	    public Settings(string settingsFilename)
 		{
 			var lines = File.ReadAllLines(settingsFilename)
 				.Where(line => !string.IsNullOrWhiteSpace(line))
