@@ -11,9 +11,9 @@ namespace battleships
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 		private Process process;
 		private readonly string exePath;
-		private readonly ProcessMonitor monitor;
+		private readonly IProcessMonitor monitor;
 
-		public Ai(string exePath, ProcessMonitor monitor)
+		public Ai(string exePath, IProcessMonitor monitor)
 		{
 			this.exePath = exePath;
 			this.monitor = monitor;
