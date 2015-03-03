@@ -37,6 +37,7 @@ namespace battleships
 		{
             var ai = aiFactory(exe);
 		    data.name = ai.Name;
+		    ai.InitNewProcess += monitor.CatchProcess;
 
             for (var gameIndex = 0; gameIndex < settings.GamesCount; gameIndex++)
 			{
@@ -49,6 +50,7 @@ namespace battleships
 					data.crashes++;
 					if (data.crashes > settings.CrashLimit) break;
                     ai = aiFactory(exe);
+                    ai.InitNewProcess += monitor.CatchProcess;
 				}
 				else
 					data.shots.Add(game.TurnsCount);

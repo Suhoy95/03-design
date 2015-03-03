@@ -10,6 +10,7 @@ namespace battleships
     public interface IProcessMonitor
     {
         void Register(Process process);
+        void CatchProcess(object sender, Process process);
     }
 
 	public class ProcessMonitor : IProcessMonitor
@@ -46,6 +47,11 @@ namespace battleships
 				Name = "Process monitoring"
 			};
 		}
+
+	    public void CatchProcess(object sender, Process process)
+	    {
+	        Register(process);
+	    }
 
 		public void Register(Process process)
 		{
