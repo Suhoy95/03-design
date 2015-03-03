@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using Ninject;
-using Ninject.Parameters;
 
 namespace battleships
 {

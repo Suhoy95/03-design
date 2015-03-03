@@ -8,21 +8,25 @@ namespace battleships
 {
 	public class AiTester
 	{
-        private static IKernel container = new StandardKernel();
 		private readonly Settings settings;
 	    private readonly IMapGenerator gen;
 	    private readonly IGameVisualizer vis;
 	    private readonly IProcessMonitor monitor;
-        private Ai ai;
+	    private Func<string, Ai> aiFactory;
+	    private Func<Map, Ai, Game> gameFactory; 
 
         private static readonly Logger resultsLog = LogManager.GetLogger("results");
 
-	    public AiTester(Settings settings, IMapGenerator generator, IGameVisualizer visualizer, IProcessMonitor monitor)
+	    public AiTester(Settings settings, IMapGenerator generator, 
+                        IGameVisualizer visualizer, IProcessMonitor monitor,
+                        Func<string, Ai> aiFactory, Func<Map, Ai, Game> gameFactory)
 	    {
             this.settings = settings;
             gen = generator;
             vis = visualizer;
-            this.monitor = monitor; 
+            this.monitor = monitor;
+	        this.aiFactory = aiFactory;
+	        this.gameFactory = gameFactory;
 	    }
 
 		public void TestSingleFile(string exe)
@@ -31,11 +35,11 @@ namespace battleships
             var crashes = 0;
             var gamesPlayed = 0;
             var shots = new List<int>();
-            ai = new Ai(exe, monitor);
+            var ai = aiFactory(exe);
 
             for (var gameIndex = 0; gameIndex < settings.GamesCount; gameIndex++)
 			{
-			    var game = new Game(gen.GenerateMap(), ai);
+			    var game = gameFactory(gen.GenerateMap(), ai);
 				RunGameToEnd(game);
 				gamesPlayed++;
 				badShots += game.BadShots;
@@ -43,7 +47,7 @@ namespace battleships
 				{
 					crashes++;
 					if (crashes > settings.CrashLimit) break;
-                    ai = new Ai(exe, monitor);
+                    ai = aiFactory(exe);
 				}
 				else
 					shots.Add(game.TurnsCount);
