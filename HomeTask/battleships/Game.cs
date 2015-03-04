@@ -21,6 +21,7 @@ namespace battleships
 			this.ai = ai;
 			TurnsCount = 0;
 			BadShots = 0;
+		    AiCrashed = false;
 		}
 
 		public Vector LastTarget { get; private set; }
@@ -75,5 +76,10 @@ namespace battleships
 			var cellHaveWoundedDiagonalNeighbour = diagonals.Any(d => Map[target.Add(d)] == MapCell.DeadOrWoundedShip);
 			return cellWasHitAlready || cellIsNearDestroyedShip || cellHaveWoundedDiagonalNeighbour;
 		}
+
+	    public void DisposeAi()
+	    {
+	        ai.Dispose();
+	    }
 	}
 }

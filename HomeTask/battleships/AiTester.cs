@@ -39,35 +39,19 @@ namespace battleships
 		    data.name = ai.Name;
 		    ai.InitNewProcess += monitor.CatchProcess;
 
-            for (var gameIndex = 0; gameIndex < settings.GamesCount; gameIndex++)
-			{
-			    var game = gameFactory(gen.GenerateMap(), ai);
-				RunGameToEnd(game);
-				data.gamesPlayed++;
-				data.badShots += game.BadShots;
-				if (game.AiCrashed)
-				{
-					data.crashes++;
-					if (data.crashes > settings.CrashLimit) break;
-                    ai = aiFactory(exe);
-                    ai.InitNewProcess += monitor.CatchProcess;
-				}
-				else
-					data.shots.Add(game.TurnsCount);
-			
-                if (settings.Verbose)
-				{
-					Console.WriteLine(
-						"Game #{3,4}: Turns {0,4}, BadShots {1}{2}",
-						game.TurnsCount, game.BadShots, game.AiCrashed ? ", Crashed" : "", gameIndex);
-				}
-			}
+		    var games = Enumerable.Range(0, settings.GamesCount)
+		        .Select(index => new{index=index, game=gameFactory(gen.GenerateMap(), ai)})
+                .Select(x => RunGameToEnd(x.game, x.index));
 
-			ai.Dispose();
-			WriteTotal(SolveStatistics(data, settings));
+		    data.gamesPlayed = settings.GamesCount;
+		    data.badShots = games.Sum(game => game.BadShots);
+		    data.crashes = games.Count(game => game.AiCrashed);
+		    data.shots = games.Select(game => game.TurnsCount).ToList();
+            
+            WriteTotal(SolveStatistics(data, settings));
 		}
 
-		private void RunGameToEnd(Game game)
+		private Game RunGameToEnd(Game game, int gameIndex)
 		{
 			while (!game.IsOver())
 			{
@@ -80,7 +64,20 @@ namespace battleships
 					Console.ReadKey();
 				}
 			}
+            game.DisposeAi();
+
+		    if (settings.Verbose) 
+                VerboseGame(game, gameIndex);
+
+		    return game;
 		}
+
+        private void VerboseGame(Game game, int gameIndex)
+        {
+            Console.WriteLine(
+                "Game #{3,4}: Turns {0,4}, BadShots {1}{2}",
+                game.TurnsCount, game.BadShots, game.AiCrashed ? ", Crashed" : "", gameIndex);
+        }
 
 	    private static Statistics SolveStatistics(DataOfStatistics d, Settings settings)
 	    {
