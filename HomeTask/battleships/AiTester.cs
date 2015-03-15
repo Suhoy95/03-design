@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Security.Cryptography;
 using Ninject;
@@ -7,51 +8,104 @@ using NLog;
 
 namespace battleships
 {
-	public class AiTester
+    public class AiManager
+    {
+        private Ai ai;
+        private string exe;
+        private int crashLimit;
+        public int crashes { get; private set; }
+        private Func<string, Ai> aiFactory;
+
+        public AiManager(Func<string, Ai> aiFactory, string exe, int crashLimit)
+        {
+            this.aiFactory = aiFactory;
+            this.exe = exe;
+            this.crashLimit = crashLimit;
+            crashes = 0;
+        }
+
+        public Ai GetAi()
+        {
+            if (ai == null)
+                ai = aiFactory(exe);
+
+            if (ai.Crashed)
+            {
+                ai = aiFactory(exe);
+                crashes++;
+            }
+            return crashes < crashLimit ? ai : null;
+        }
+
+        public bool IsAiCrached()
+        {
+            return ai != null && ai.Crashed;
+        }
+
+        public void DesposeAi()
+        {
+            ai.Dispose();
+        }
+    }
+
+    public class AiTester
 	{
 		private readonly Settings settings;
 	    private readonly IMapGenerator gen;
 	    private readonly IGameVisualizer vis;
 	    private readonly IProcessMonitor monitor;
-	    private DataOfStatistics data;
-	    private Func<string, Ai> aiFactory;
+        private AiManager aiManager;
+	    private Func<string, int, AiManager> aiManagerFactory;
 	    private Func<Map, Ai, Game> gameFactory; 
 
         private static readonly Logger resultsLog = LogManager.GetLogger("results");
 
 	    public AiTester(Settings settings, IMapGenerator generator, 
                         IGameVisualizer visualizer, IProcessMonitor monitor,
-                        DataOfStatistics data,
-                        Func<string, Ai> aiFactory, Func<Map, Ai, Game> gameFactory)
+                        Func<string, int, AiManager> aiManagerFactory, Func<Map, Ai, Game> gameFactory)
 	    {
             this.settings = settings;
             gen = generator;
             vis = visualizer;
             this.monitor = monitor;
-	        this.data = data;
-	        this.aiFactory = aiFactory;
+	        this.aiManagerFactory = aiManagerFactory;
 	        this.gameFactory = gameFactory;
 	    }
 
 		public void TestSingleFile(string exe)
 		{
-            var ai = aiFactory(exe);
-		    data.name = ai.Name;
-		    ai.InitNewProcess += monitor.CatchProcess;
+            var data = new DataOfStatistics();
+            aiManager = aiManagerFactory(exe, settings.CrashLimit);
 
+		    data.name = aiManager.GetAi().Name;
+		    
 		    var games = Enumerable.Range(0, settings.GamesCount)
-		        .Select(index => new{index=index, game=gameFactory(gen.GenerateMap(), ai)})
-                .Select(x => RunGameToEnd(x.game, x.index));
+                .Select(index => new {index, ai=aiManager.GetAi()})
+                .Where(pair => pair.ai != null)
+		        .Select(pair =>
+		                {
+		                    pair.ai.InitNewProcess += monitor.CatchProcess;
+		                    return new {pair.index, game = gameFactory(gen.GenerateMap(), pair.ai)};
+		                })
+                .Select(pair =>
+                {
+                    var game = RunGameToEnd(pair.game);
+                    if (settings.Verbose) VerboseGame(game, pair.index);
+                    return game;
+                })
+                .ToArray();
 
-		    data.gamesPlayed = settings.GamesCount;
+		    aiManager.DesposeAi();
+
+		    data.gamesPlayed = games.Length;
 		    data.badShots = games.Sum(game => game.BadShots);
-		    data.crashes = games.Count(game => game.AiCrashed);
+		    data.crashes = aiManager.crashes;
 		    data.shots = games.Select(game => game.TurnsCount).ToList();
             
             WriteTotal(SolveStatistics(data, settings));
 		}
 
-		private Game RunGameToEnd(Game game, int gameIndex)
+		private Game RunGameToEnd(Game game)
 		{
 			while (!game.IsOver())
 			{
@@ -59,15 +113,11 @@ namespace battleships
 				if (settings.Interactive)
 				{
 					vis.Visualize(game);
-					if (game.AiCrashed)
+					if (game.AiGiveUp)
 						Console.WriteLine(game.LastError.Message);
 					Console.ReadKey();
 				}
 			}
-            game.DisposeAi();
-
-		    if (settings.Verbose) 
-                VerboseGame(game, gameIndex);
 
 		    return game;
 		}
@@ -76,7 +126,7 @@ namespace battleships
         {
             Console.WriteLine(
                 "Game #{3,4}: Turns {0,4}, BadShots {1}{2}",
-                game.TurnsCount, game.BadShots, game.AiCrashed ? ", Crashed" : "", gameIndex);
+                game.TurnsCount, game.BadShots, aiManager.IsAiCrached() ? ", Crashed" : "", gameIndex);
         }
 
 	    private static Statistics SolveStatistics(DataOfStatistics d, Settings settings)

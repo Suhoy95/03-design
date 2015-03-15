@@ -21,7 +21,7 @@ namespace battleships
 			this.ai = ai;
 			TurnsCount = 0;
 			BadShots = 0;
-		    AiCrashed = false;
+		    AiGiveUp = false;
 		}
 
 		public Vector LastTarget { get; private set; }
@@ -30,18 +30,22 @@ namespace battleships
 		public int BadShots { get; private set; }
 		public Map Map { get; private set; }
 		public ShotInfo LastShotInfo { get; private set; }
-		public bool AiCrashed { get; private set; }
+		public bool AiGiveUp { get; private set; }
 		public Exception LastError { get; private set; }
 
 		public bool IsOver()
 		{
-			return !Map.HasAliveShips() || AiCrashed;
+			return !Map.HasAliveShips() || AiGiveUp;
 		}
 
 		public void MakeStep()
 		{
 			if (IsOver()) throw new InvalidOperationException("Game is Over");
-			if (!UpdateLastTarget()) return;
+			if (!UpdateLastTarget())
+            {
+			    AiGiveUp = true; 
+                return;
+            }
 			if (IsBadShot(LastTarget)) BadShots++;
 			var hit = Map.Shoot(LastTarget);
 			LastShotInfo = new ShotInfo {Target = LastTarget, Hit = hit};
@@ -51,21 +55,10 @@ namespace battleships
 
 		private bool UpdateLastTarget()
 		{
-			try
-			{
 				LastTarget = LastTarget == null
 					? ai.Init(Map.Width, Map.Height, Map.Ships.Select(s => s.Size).ToArray())
 					: ai.GetNextShot(LastShotInfo.Target, LastShotInfo.Hit);
-				return true;
-			}
-			catch (Exception e)
-			{
-				AiCrashed = true;
-				log.Info("Ai {0} crashed", ai.Name);
-				log.Error(e);
-				LastError = e;
-				return false;
-			}
+				return LastTarget != null;
 		}
 
 		private bool IsBadShot(Vector target)
@@ -76,10 +69,5 @@ namespace battleships
 			var cellHaveWoundedDiagonalNeighbour = diagonals.Any(d => Map[target.Add(d)] == MapCell.DeadOrWoundedShip);
 			return cellWasHitAlready || cellIsNearDestroyedShip || cellHaveWoundedDiagonalNeighbour;
 		}
-
-	    public void DisposeAi()
-	    {
-	        ai.Dispose();
-	    }
 	}
 }

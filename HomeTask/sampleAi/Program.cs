@@ -27,7 +27,7 @@ namespace SampleAi
 				// Miss <last_shot_X> <last_shot_Y>
 				// Один экземпляр вашей программы может быть использван для проведения нескольких игр подряд.
 				// Сообщение Init сигнализирует о том, что началась новая игра.
-				if (r.Next(100000) == 0) throw new Exception("Шломался!");
+				if (r.Next(100000) < 10) throw new Exception("Шломался!");
 				Console.WriteLine("{0} {1}", r.Next(20), r.Next(20));
 			}
 		}
